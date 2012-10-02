@@ -16,5 +16,3 @@ Spam-filter is [Clojure](http://clojure.org) library for spam-filtering. It is b
 Copyleft (C) 2012 crazia 
 
 Distributed under the Eclipse Public License, the same as Clojure.
-
-PCL's spam-filter in clojure
