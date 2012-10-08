@@ -90,3 +90,43 @@
   (doseq [ feature (extract-features text) ]
     (increment-count (:word feature) type))
   (increment-total-count type))
+
+; broken out into separate functions, unlike PCL
+;; (defn spam-frequency [feature]
+;;   (/ (feature :spam-count) (max 1 @total-spams)))
+;; (defn ham-frequency [feature]
+;;   (/ (feature :ham-count) (max 1 @total-hams)))
+
+;; (defn spam-probability [feature]
+;;   (/ (spam-frequency feature) 
+;;      (+ (spam-frequency feature) (ham-frequency feature))))
+
+(defn spam-probability [feature]
+  (let [spam-frequency (/ (feature :spam-count) (max 1 @total-spams))
+        ham-frequency (/ (feature :ham-count) (max 1 @total-hams)) ]
+    (/ spam-frequency (+ spam-frequency ham-frequency))))
+
+
+(defn bayesian-spam-probability
+  ([feature] 
+     (bayesian-spam-probability feature 1/2))
+  ([feature assumed-probability] 
+     (bayesian-spam-probability feature assumed-probability 1))
+  ([feature assumed-probability weight]
+     (let [basic-probability (spam-probability feature)
+	   data-points (+ (:spam-count feature) (:ham-count feature))]
+       (/ (+ (* weight assumed-probability)
+	     (* data-points basic-probability))
+	  (+ weight data-points)))))
+
+
+
+;; (defn score [features]
+;;   (let [spam-probs (map bayesian-spam-probability features)
+;;         ham-probs (map #(- 1 %1) spam-probs)
+;;         num (count features)
+;;         h (- 1 (fisher spam-probs num))
+;;         s (- 1 (fisher ham-probs num))]
+;;      (/ (+ (- 1 h) s) 2)))
+
+
